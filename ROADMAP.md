@@ -19,20 +19,25 @@ on a real home directory, and the GUI opens the catalog.
 
 ## M1 — A trustworthy index
 
-- [ ] Ignore rules: `.gitignore`, `.folderolignore`, XDG trash, build dirs
-- [ ] Include/exclude roots, per-root content opt-in
-- [ ] Progress reporting, cancellation, resumable scans
+Specification: [docs/M1-INDEXING.md](docs/M1-INDEXING.md)
+
+- [ ] Ignore rules: `.gitignore`, `.folderolignore`, default build caches
+- [ ] Include/exclude roots, symlink and filesystem-boundary policy
+- [ ] Progress reporting, cancellation, resumable incremental scans
 - [ ] Incremental updates via inotify (debounced, move-aware)
 - [x] Store `embedder_id` + `dim` in `meta`; warn on mismatch
-- [ ] Automatic vector rebuild on model change
-- [ ] Index permissions `0600`, migration tests, backup/restore docs
-- [ ] Benchmarks: 10k / 100k / 1M synthetic files, CI regression gate
-- [ ] Packaging: AUR `folderol-git`, Flatpak manifest
+- [ ] Cancel-safe vector rebuild when the embedder changes
+- [ ] Index permissions `0600`, private directory, migration tests
+- [ ] Benchmarks: 10k / 100k synthetic, CI regression gate, 100k real-tree report
+- [ ] Packaging: AUR `folderol-git`, Flatpak manifest, desktop entry, icon
 
 **Exit criteria:** point it at `$HOME`, interrupt it, restart it, and the counts
 are correct. A file renamed on disk is findable by its new name within a second.
+The catalog is unreadable by other users and no file content was read.
 
 ## M2 — Real semantics
+
+Specification: [docs/ML.md](docs/ML.md)
 
 - [ ] `ort` + ONNX `all-MiniLM-L6-v2` (quantized) behind the existing trait
 - [ ] Explicit model download with pinned SHA-256 and offline fallback
@@ -48,6 +53,8 @@ the hashing baseline by a documented margin.
 
 ## M3 — The browser
 
+Specification: [docs/FILE-MANAGER.md](docs/FILE-MANAGER.md)
+
 - [ ] Real file view: list + grid, virtualized, sortable, resizable columns
 - [ ] Tabs, back/forward history, breadcrumbs, editable path bar
 - [ ] Thumbnails via glycin, disk cache, bounded worker pool
@@ -61,6 +68,8 @@ the hashing baseline by a documented margin.
 data-loss incident or a "where is that file" moment.
 
 ## M4 — The learning loop
+
+Specification: [docs/ML.md](docs/ML.md) §7–8
 
 - [ ] Interaction events: open, reveal, move, co-access
 - [ ] Folder affinity and "usually together" ranking

@@ -89,8 +89,10 @@ crates/
   folderol-core/    domain types, tokenization, feature text, category priors
   folderol-ml/      embedder trait, hashing embedder, online classifier
   folderol-index/   SQLite catalog, FTS5, hybrid retrieval
-  folderol-cli/     scan / search / learn / stats
+  folderol-scan/    ignore-aware walking, batching, watch mode (planned, M1)
+  folderol-cli/     scan / watch / search / learn / stats / bench
   folderol-gui/     GTK4 + libadwaita shell
+docs/               product, behaviour, indexing, ML, testing, release specs
 docs/adr/           architecture decisions, one per irreversible choice
 ```
 
@@ -99,8 +101,17 @@ ever leaks into the engine, and no engine crate opens a socket.
 
 ## Documentation
 
+Start with the [documentation index](docs/README.md).
+
+- [docs/PRODUCT.md](docs/PRODUCT.md) — problem, personas, scope, success metrics
+- [docs/FILE-MANAGER.md](docs/FILE-MANAGER.md) — the complete browser and file-operation spec
+- [DESIGN.md](DESIGN.md) — interaction and visual system
 - [ARCHITECTURE.md](ARCHITECTURE.md) — how indexing, retrieval and learning fit together
-- [DESIGN.md](DESIGN.md) — the interaction and visual system
+- [docs/M1-INDEXING.md](docs/M1-INDEXING.md) — the trustworthy-index specification
+- [docs/ML.md](docs/ML.md) — features, embeddings, classifier, evaluation
+- [docs/STATES.md](docs/STATES.md) — loading, empty, error and confirmation copy
+- [docs/TESTING.md](docs/TESTING.md) — correctness, retrieval and performance proof
+- [docs/RELEASING.md](docs/RELEASING.md) — packaging and release process
 - [ROADMAP.md](ROADMAP.md) — milestones and non-goals
 - [docs/adr/](docs/adr/) — why the stack looks like this
 - [CONTRIBUTING.md](CONTRIBUTING.md) — build, test, and decision process

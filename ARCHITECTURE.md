@@ -77,6 +77,13 @@ Domain types with no UI and almost no I/O.
 - `Catalog::search` performs hybrid retrieval in one pass and returns every
   score component for the UI to explain.
 
+### `folderol-scan` (planned, M1)
+
+The only crate allowed to walk user directories. It owns the `ignore` rules,
+batching, cancellation, incremental decisions and the watch event loop. The CLI
+and GUI call it; neither implements its own traversal. Specification:
+[M1-INDEXING.md](docs/M1-INDEXING.md).
+
 ### `folderol-cli`
 
 The reference client and the test harness for the engine. `scan`, `search`,
@@ -201,7 +208,8 @@ regressions are visible rather than felt.
 ## Testing strategy
 
 - **Unit tests per crate** — tokenization, priors, embedding normalization,
-  classifier convergence, schema round-trips, ranking gates.
+  classifier convergence, schema round-trips, ranking gates. The full strategy
+  is in [TESTING.md](docs/TESTING.md).
 - **Fixture corpus** — a checked-in directory of empty files with realistic
   names and types, used for golden retrieval tests.
 - **Ranking evaluation** — a small labelled query set with expected top-3

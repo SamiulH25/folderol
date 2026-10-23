@@ -70,6 +70,22 @@ cargo run -p folderol-cli -- --db /tmp/folderol-demo.sqlite3 search "sqlite cata
   any trade-off made.
 - Do not include generated-by or tool-attribution trailers. Write as yourself.
 
+## Documentation
+
+Behaviour changes update the documents that describe them, in the same pull
+request:
+
+- product scope or metrics → `docs/PRODUCT.md`
+- navigation, operations or search → `docs/FILE-MANAGER.md`
+- scanning, watching or permissions → `docs/M1-INDEXING.md`
+- embeddings, classifier or ranking → `docs/ML.md`
+- loading, empty or error states → `docs/STATES.md`
+- tests or performance budgets → `docs/TESTING.md`
+
+The index of documents and their status vocabulary is `docs/README.md`. A stale
+document is a bug; if the code and the document disagree, fix one of them before
+merging.
+
 ## Architecture decisions
 
 Any choice that is expensive to reverse gets an ADR in `docs/adr/`:

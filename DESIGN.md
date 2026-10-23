@@ -1,5 +1,9 @@
 # Design
 
+This document covers the look, feel and interaction principles. The complete
+behavioural contract is in [docs/FILE-MANAGER.md](docs/FILE-MANAGER.md); the
+loading, empty and error copy is in [docs/STATES.md](docs/STATES.md).
+
 ## The feeling
 
 Folderol should feel like a well-made tool, not a demo of a model. Open it and
