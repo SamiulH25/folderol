@@ -81,10 +81,6 @@ impl Classifier {
         &self.classes
     }
 
-    pub fn sample_count(&self) -> usize {
-        0
-    }
-
     /// Train with stochastic gradient descent on the logistic loss.
     ///
     /// Samples may repeat between calls; the classifier is incremental by
