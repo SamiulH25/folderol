@@ -23,7 +23,8 @@ on a real home directory, and the GUI opens the catalog.
 - [ ] Include/exclude roots, per-root content opt-in
 - [ ] Progress reporting, cancellation, resumable scans
 - [ ] Incremental updates via inotify (debounced, move-aware)
-- [ ] Store `embedder_id` + `dim` in `meta`; rebuild on model change
+- [x] Store `embedder_id` + `dim` in `meta`; warn on mismatch
+- [ ] Automatic vector rebuild on model change
 - [ ] Index permissions `0600`, migration tests, backup/restore docs
 - [ ] Benchmarks: 10k / 100k / 1M synthetic files, CI regression gate
 - [ ] Packaging: AUR `folderol-git`, Flatpak manifest

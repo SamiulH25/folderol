@@ -102,7 +102,10 @@ fn scan(db: &Path, roots: &[PathBuf], include_hidden: bool, limit: Option<usize>
     let mut written = 0usize;
 
     'roots: for root in roots {
-        let walker = WalkDir::new(root)
+        // Index absolute paths so `scan .` and `scan ~/x` agree, and so a
+        // later `learn relative/path` can find the row.
+        let root = root.canonicalize().unwrap_or_else(|_| root.clone());
+        let walker = WalkDir::new(&root)
             .follow_links(false)
             .into_iter()
             .filter_entry(|entry| {
@@ -166,6 +169,8 @@ fn scan(db: &Path, roots: &[PathBuf], include_hidden: bool, limit: Option<usize>
     }
 
     written += catalog.upsert_many(&batch)?;
+    catalog.set_meta("embedder_id", embedder.model_id())?;
+    catalog.set_meta("embedding_dim", &embedder.dim().to_string())?;
 
     println!(
         "Indexed {written} files into {} ({} total).",
@@ -179,6 +184,15 @@ fn scan(db: &Path, roots: &[PathBuf], include_hidden: bool, limit: Option<usize>
 fn search(db: &Path, query: &str, limit: usize) -> Result<()> {
     let catalog = Catalog::open(db).with_context(|| format!("opening {}", db.display()))?;
     let embedder = HashingEmbedder::default();
+
+    if let Some(indexed_with) = catalog.get_meta("embedder_id")?
+        && indexed_with != embedder.model_id()
+    {
+        eprintln!(
+            "warning: this catalog was built with {indexed_with}; run `folderol scan` to rebuild the vectors"
+        );
+    }
+
     let hits = catalog.search(query, &embedder, SearchWeights::default(), limit)?;
 
     if hits.is_empty() {

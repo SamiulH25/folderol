@@ -17,7 +17,7 @@ use gtk::prelude::*;
 use gtk::{glib, pango};
 use libadwaita as adw;
 
-const APP_ID: &str = "io.github.folderol.Folderol";
+const APP_ID: &str = "io.github.samiulh25.Folderol";
 
 fn main() -> glib::ExitCode {
     let app = adw::Application::builder().application_id(APP_ID).build();

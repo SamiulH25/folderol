@@ -19,7 +19,7 @@ use folderol_core::{Category, FileRecord};
 use folderol_ml::{Embedder, cosine};
 use rusqlite::{Connection, OptionalExtension, params};
 
-const SCHEMA_VERSION: i64 = 1;
+const SCHEMA_VERSION: i64 = 2;
 
 const FILE_COLUMNS: &str = "files.id, files.path, files.name, files.ext, files.mime, files.size, files.modified, files.category, files.confidence, files.embedding";
 
@@ -188,7 +188,37 @@ impl Catalog {
             ))?;
         }
 
+        if version < 2 {
+            self.conn.execute_batch(
+                "CREATE TABLE IF NOT EXISTS meta (
+                    key   TEXT PRIMARY KEY,
+                    value TEXT NOT NULL
+                );
+                PRAGMA user_version = 2;",
+            )?;
+        }
+
         Ok(())
+    }
+
+    pub fn set_meta(&self, key: &str, value: &str) -> Result<(), IndexError> {
+        self.conn.execute(
+            "INSERT INTO meta (key, value) VALUES (?1, ?2)
+             ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+            params![key, value],
+        )?;
+        Ok(())
+    }
+
+    pub fn get_meta(&self, key: &str) -> Result<Option<String>, IndexError> {
+        Ok(self
+            .conn
+            .query_row(
+                "SELECT value FROM meta WHERE key = ?1",
+                params![key],
+                |row| row.get(0),
+            )
+            .optional()?)
     }
 
     /// Insert or update files in one transaction. Returns the number written.
@@ -209,8 +239,17 @@ impl Catalog {
                     mime = excluded.mime,
                     size = excluded.size,
                     modified = excluded.modified,
-                    category = excluded.category,
-                    confidence = excluded.confidence,
+                    -- A human correction outlives a rescan. The subquery reads
+                    -- the label row that was written for this file, if any.
+                    category = COALESCE(
+                        (SELECT labels.category FROM labels WHERE labels.file_id = files.id),
+                        excluded.category
+                    ),
+                    confidence = CASE
+                        WHEN EXISTS (SELECT 1 FROM labels WHERE labels.file_id = files.id)
+                            THEN 1.0
+                        ELSE excluded.confidence
+                    END,
                     embedding = excluded.embedding,
                     indexed_at = excluded.indexed_at
                  RETURNING id",
@@ -642,6 +681,36 @@ mod tests {
         let stats = catalog.stats().unwrap();
         let total: usize = stats.iter().map(|(_, count)| count).sum();
         assert_eq!(total, 3);
+    }
+
+    #[test]
+    fn a_scan_does_not_overwrite_a_human_label() {
+        let mut catalog = catalog_with_files();
+        let path = Path::new("/home/sam/Pictures/holiday-beach.jpg");
+        catalog.set_label(path, Category::Documents).unwrap();
+
+        // Re-index the same file with its extension prior (Images).
+        catalog
+            .upsert_many(&[new_file(
+                "/home/sam/Pictures/holiday-beach.jpg",
+                Category::Images,
+            )])
+            .unwrap();
+
+        let file = catalog.get_by_path(path).unwrap().expect("file");
+        assert_eq!(file.category, Category::Documents);
+        assert_eq!(file.confidence, 1.0);
+    }
+
+    #[test]
+    fn meta_round_trips() {
+        let catalog = catalog_with_files();
+        assert_eq!(catalog.get_meta("embedder_id").unwrap(), None);
+        catalog.set_meta("embedder_id", "hashing-v1").unwrap();
+        assert_eq!(
+            catalog.get_meta("embedder_id").unwrap().as_deref(),
+            Some("hashing-v1")
+        );
     }
 
     #[test]

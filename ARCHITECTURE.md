@@ -110,6 +110,7 @@ files_fts USING fts5(name, path, tokens, tokenize='unicode61 remove_diacritics 2
 
 labels(file_id PRIMARY KEY, category, created_at)
 events(id, file_id, kind, at)
+meta(key PRIMARY KEY, value)          -- embedder_id, embedding_dim, schema notes
 ```
 
 Design notes:
@@ -118,7 +119,7 @@ Design notes:
   network filesystems; a move is an update keyed by path, with the old row
   deleted by the watcher.
 - **The vector is opaque.** Only the model that wrote it may read it. `meta`
-  records `embedder_id` and `dim`; a mismatch triggers a background rebuild
+  records `embedder_id` and `embedding_dim`; a mismatch triggers a background rebuild
   rather than silent nonsense.
 - **No content column.** Content extraction arrives as a separate,
   opt-in stage with its own table, so the metadata index stays fast and small.
