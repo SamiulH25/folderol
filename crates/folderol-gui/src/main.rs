@@ -55,7 +55,6 @@ fn build_ui(app: &adw::Application) {
 
     let header = adw::HeaderBar::new();
     header.set_title_widget(Some(&search));
-    header.pack_end(&gtk::Button::from_icon_name("view-refresh-symbolic"));
 
     // Sidebar: places + categories from the catalog's own statistics.
     let sidebar = gtk::Box::new(gtk::Orientation::Vertical, 6);
