@@ -1,0 +1,47 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/folderol-core",
+    "crates/folderol-ml",
+    "crates/folderol-index",
+    "crates/folderol-cli",
+    "crates/folderol-gui",
+]
+# The GUI is excluded from the default build so `cargo build` stays fast and
+# headless machines only need SQLite. Build it with `cargo build -p folderol-gui`.
+default-members = [
+    "crates/folderol-core",
+    "crates/folderol-ml",
+    "crates/folderol-index",
+    "crates/folderol-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+license = "GPL-3.0-or-later"
+authors = ["Samiulh25"]
+repository = "https://github.com/SamiulH25/folderol"
+homepage = "https://github.com/SamiulH25/folderol"
+keywords = ["file-manager", "search", "embeddings", "gtk4", "linux"]
+categories = ["gui", "filesystem"]
+
+[workspace.dependencies]
+folderol-core = { path = "crates/folderol-core" }
+folderol-ml = { path = "crates/folderol-ml" }
+folderol-index = { path = "crates/folderol-index" }
+
+anyhow = "1.0.104"
+clap = { version = "4.6.7", features = ["derive", "env"] }
+mime_guess = "2.0.5"
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.154"
+thiserror = "2.0.18"
+walkdir = "2.5.0"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

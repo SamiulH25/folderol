@@ -1,0 +1,21 @@
+[package]
+name = "folderol-cli"
+description = "Command-line scanning, search and training for Folderol"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "folderol"
+path = "src/main.rs"
+
+[dependencies]
+folderol-core.workspace = true
+folderol-index.workspace = true
+folderol-ml.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+walkdir.workspace = true
